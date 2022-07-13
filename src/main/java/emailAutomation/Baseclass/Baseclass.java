@@ -3,6 +3,7 @@ package emailAutomation.Baseclass;
 import java.io.File;
 import java.io.FileReader;
 import java.net.URL;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Properties;
 
@@ -10,18 +11,22 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.touch.TouchActions;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.aventstack.extentreports.cucumber.adapter.ExtentCucumberAdapter;
 
+import io.appium.java_client.TouchAction;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.AndroidElement;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
+import io.appium.java_client.touch.WaitOptions;
+import io.appium.java_client.touch.offset.PointOption;
 import io.cucumber.java.Scenario;
 
 public class Baseclass {
@@ -37,7 +42,7 @@ public class Baseclass {
 	public static  String AppPropertiesFile = "./src/test/resources/Properties/App.properties" ;
 	
 
-	public String ReadProperties(String Property, String Location) throws Throwable {
+	public static String ReadProperties(String Property, String Location) throws Throwable {
 
 		Prop = new Properties();
 		File FileLocation = new File(Location);
@@ -46,7 +51,7 @@ public class Baseclass {
 		return	Prop.getProperty(Property);
 	}
 	
-	public void LaunchApp() throws Throwable {
+	public static void LaunchApp() throws Throwable {
 		
 		DesiredCapabilities DC = new DesiredCapabilities();
 		DC.setCapability(MobileCapabilityType.UDID, ReadProperties("App.UDID", AppPropertiesFile));
@@ -57,17 +62,17 @@ public class Baseclass {
 	}
 
 
-	public void PrintValue(String Value) {
+	public static void PrintValue(String Value) {
 
 		System.out.println(Value);
 	}
 
-	public void PrintError(String Value) {
+	public static void PrintError(String Value) {
 
 		System.err.println(Value);
 	}
 
-	public WebElement GetElement(String Property, String Location) throws Throwable {
+	public static WebElement GetElement(String Property, String Location) throws Throwable {
 
 		String LocatorType, LocatorValue;
 		Properties Prop = new Properties();
@@ -113,14 +118,14 @@ public class Baseclass {
 		}
 	}
 
-	public WebElement WaitForTheElement(String LoadXpath) throws Throwable {
+	public static WebElement WaitForTheElement(String LoadXpath) throws Throwable {
 	
 		WebDriverWait wait = new WebDriverWait(AndroidDriver, 20);
 		WebElement Element= 	wait.until(ExpectedConditions.elementToBeClickable(By.xpath(LoadXpath)));
 		return Element;
 	}
 	
-	public void ClickElement(String Locator,String locatorfile ) throws Throwable {
+	public static void ClickElement(String Locator,String locatorfile ) throws Throwable {
 
 		WebDriverWait wait = new WebDriverWait(AndroidDriver, 120);
 		wait.until(ExpectedConditions.elementToBeClickable(GetElement(Locator,locatorfile))).click();
@@ -133,7 +138,7 @@ public class Baseclass {
 		executor.executeScript("arguments[0].click();", element);
 	}
 
-	public void TypeDataInTheField ( String Locator,String locatorfile, String Data) throws Throwable {
+	public static void TypeDataInTheField ( String Locator,String locatorfile, String Data) throws Throwable {
 
 		WebDriverWait wait = new WebDriverWait(AndroidDriver, 120);
 		WebElement Element =	wait.until(ExpectedConditions.elementToBeClickable(GetElement(Locator,locatorfile)));
@@ -141,7 +146,7 @@ public class Baseclass {
 		
 	} 
 	
-	public String GetText ( String Locator,String locatorfile) throws Throwable {
+	public static String GetText ( String Locator,String locatorfile) throws Throwable {
 
 		WebDriverWait wait = new WebDriverWait(AndroidDriver, 120);
 		WebElement Element =	wait.until(ExpectedConditions.elementToBeClickable(GetElement(Locator,locatorfile)));
@@ -154,21 +159,21 @@ public class Baseclass {
 
 	}
 	
-	public boolean IsElementDisplayed ( String Locator,String locatorfile) throws Throwable {
+	public static boolean IsElementDisplayed ( String Locator,String locatorfile) throws Throwable {
 
 		WebDriverWait wait = new WebDriverWait(AndroidDriver, 120);
 		WebElement Element =	wait.until(ExpectedConditions.elementToBeClickable(GetElement(Locator,locatorfile)));
 		return Element.isDisplayed();
 	} 
 
-	public void ScrollElement(String visibleText) {
+//	public void ScrollElement(String visibleText) {
+//
+//		String scrollElement =	"new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().textContains(\""+ visibleText + "\").instance(0))";
+//		AndroidDriver.findElementByAndroidUIAutomator(scrollElement);
+//		AndroidDriver.swi
+//	}
 
-		String scrollElement =	"new UiScrollable(new UiSelector().scrollable(true).instance(0)).scrollIntoView(new UiSelector().textContains(\""+ visibleText + "\").instance(0))";
-		AndroidDriver.findElementByAndroidUIAutomator(scrollElement);
-
-	}
-
-	public void ScrollToElement(String Xpath, String Direction) {
+	public static void ScrollToElement(String Xpath, String Direction) {
 
 		JavascriptExecutor js = (JavascriptExecutor) AndroidDriver;
 		HashMap<String, String> scrollObject = new HashMap<String, String>();
@@ -177,8 +182,19 @@ public class Baseclass {
 		js.executeScript("mobile: scroll", scrollObject);
 
 	}
-	public void Enter() {
-	((AndroidDriver) AndroidDriver).pressKey(new KeyEvent(AndroidKey.ENTER));
+	public static void Enter() {
+		AndroidDriver.executeScript("seetest:client.swipe(\"Right\", 1000, 990)");
 
 	}
+	public static void TOU() throws Throwable {
+        TouchAction swipe = new TouchAction(AndroidDriver)
+                .press(PointOption.point(198,415))
+                .waitAction(WaitOptions.waitOptions(Duration.ofMillis(2000)))
+                .moveTo(PointOption.point(896,432))
+                .release()
+                .perform();
+	}
+
+	
+	
 }
